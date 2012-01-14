@@ -4,10 +4,11 @@
 ;; (setq inhibit-default-init t)
 
 ;;; add load path
-(setq load-path (cons "~/share/emacs/site-lisp" load-path))
+(setq load-path (cons "~/.setting/share/emacs/site-lisp" load-path))
 
 ;;; load setting for local
-(load "~/.emacs-local.el")
+(if (file-readable-p "~/.emacs-local.el") 
+    (load "~/.emacs-local.el"))
 
 ;;; setting for os
 (if (eq window-system 'w32) (require 'window-system-w32))
@@ -39,7 +40,7 @@
 (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
                                      interpreter-mode-alist))
 ;;; Rinari for rails
-(add-to-list 'load-path "~/share/emacs/site-lisp/rinari")
+(add-to-list 'load-path "~/.setting/share/emacs/site-lisp/rinari")
 (require 'rinari)
 
 ;;; haml-mode
@@ -78,7 +79,7 @@
 (global-set-key "\M-f" 'windmove-right)
 (global-set-key "\M-b" 'windmove-left)
 (global-set-key "\M-p" 'windmove-up)
-(set-face-foreground 'font-lock-comment-face "red") (set-face-foreground 'font-lock-comment-face "red") (global-set-key "\M-n" 'windmove-down)
+(global-set-key "\M-n" 'windmove-down)
 
 ;;; shortcut 
 (global-set-key "\r"       'newline-and-indent)
