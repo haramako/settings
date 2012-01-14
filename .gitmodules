@@ -7,3 +7,6 @@
 [submodule "util/inf-ruby"]
 	path = share/emacs/site-lisp/rinari/util/inf-ruby
 	url = https://github.com/nonsequitur/inf-ruby.git
+[submodule "share/emacs/site-lisp/rinari"]
+	path = share/emacs/site-lisp/rinari
+	url = git://github.com/eschulte/rinari.git
