@@ -3,107 +3,27 @@
 ;;; uncomment this line to disable loading of "default.el" at startup
 ;; (setq inhibit-default-init t)
 
-(if (featurep 'meadow)
-    (progn 
-      ;; Settings for meadow. ( on Windows )
-      ;; ;;; TrueType フォント設定
-      (w32-add-font
-       "private-fontset" 
-      '((spec
-          ((:char-spec ascii :height 120)
-           strict
-           (w32-logfont "ＭＳ ゴシック" 0 -15 400 0 nil nil nil 0 1 3 49))
-          ((:char-spec ascii :height 120 :weight bold)
-           strict
-           (w32-logfont "ＭＳ ゴシック" 0 -15 700 0 nil nil nil 0 1 3 49))
-          ((:char-spec ascii :height 120 :slant italic)
-           strict
-           (w32-logfont "ＭＳ ゴシック" 0 -15 400 0   t nil nil 0 1 3 49))
-          ((:char-spec ascii :height 120 :weight bold :slant italic)
-           strict
-           (w32-logfont "ＭＳ ゴシック" 0 -15 700 0   t nil nil 0 1 3 49))
-          ((:char-spec japanese-jisx0208 :height 120)
-           strict
-           (w32-logfont "ＭＳ ゴシック" 0 -13 400 0 nil nil nil 128 1 3 49))
-          ((:char-spec japanese-jisx0208 :height 120 :weight bold)
-           strict
-           (w32-logfont "ＭＳ ゴシック" 0 -13 700 0 nil nil nil 128 1 3 49)
-           ((spacing . -1)))
-          ((:char-spec japanese-jisx0208 :height 120 :slant italic)
-           strict
-           (w32-logfont "ＭＳ ゴシック" 0 -13 400 0   t nil nil 128 1 3 49))
-          ((:char-spec japanese-jisx0208 :height 120 :weight bold :slant italic)
-           strict
-           (w32-logfont "ＭＳ ゴシック" 0 -13 700 0   t nil nil 128 1 3 49)
-           ((spacing . -1))))))
-      (setq default-frame-alist
-            (cons '(font . "private-fontset") ; フォントセットの指定
-                  default-frame-alist))
-      (set-language-environment 'Japanese)
-      (prefer-coding-system 'utf-8)
-      )
-  (progn
-    ;; Settings for Emacs. ( on linux )
-    ;; Language setting.
-    ;; (require 'un-define)
-    (set-language-environment 'Japanese)
-    (set-terminal-coding-system 'utf-8)
-    (set-keyboard-coding-system 'utf-8)
-    (set-buffer-file-coding-system 'utf-8-unix)
-    (setq default-buffer-file-coding-system 'utf-8)
-    (prefer-coding-system 'utf-8)
-    (set-default-coding-systems 'utf-8)
-    (setq file-name-coding-system 'utf-8)
-    (set-clipboard-coding-system 'utf-8)
-
-    (if (eq window-system 'w32)
-        (progn
-          ;; (setq default-frame-alist
-          ;;       (cons '(font . "ＭＳ ゴシック") ; フォントセットの指定
-          ;;             default-frame-alist))
-          (set-face-attribute 'default nil
-                              :family "ＭＳ ゴシック"
-                              :height 100)
-          (set-fontset-font "fontset-default"
-                            'japanese-jisx0208
-                            '("ＭＳ ゴシック" . "jisx0208-sjis"))
-          ))
-	(if (eq window-system 'mac)
-		(progn
-		  (set-fontset-font "fontset-default"
-							'japanese-jisx0208
-							'("Ricty" . "iso10646-*"))
-
-		  (set-face-attribute 'default nil
-							  :family "Ricty"
-							  :height 140)))
-	))
-
 ;;; add load path
 (setq load-path (cons "~/share/emacs/site-lisp" load-path))
 
-;; turn on font-lock mode
-(global-font-lock-mode 1 t)
+;;; load setting for local
+(load "~/.emacs-local.el")
 
-;; enable visual feedback on selections
-(setq transient-mark-mode t)
+;;; setting for os
+(if (eq window-system 'w32) (require 'window-system-w32))
+(if (eq window-system 'mac) (require 'window-system-mac))
 
 ;; customize by KON-H
-(setq c-basic-offset 2)                                 ;; Set indent width as 2
-(setq-default indent-tabs-mode nil)                     ;; Use spaces for indent
-(setq default-tab-width 4)                              ;; Set tab width as 4
+(global-font-lock-mode 1 t)                             ; turn on font-lock mode
+(setq transient-mark-mode t)                            ; enable visual feedback on selections
+(menu-bar-mode 0)                                       ; disable menubar
+(show-paren-mode 1)                                     ; Highlight parens
 
-(let ((host (intern (or (getenv "HOSTNAME") ""))))
-  (cond 
-   ((eq host 'harada-linux)
-    (c-set-style "stroustrup")
-    (setq c-basic-offset 4)
-    (setq-default indent-tabs-mode t)                         ;; Use spaces for indent
-    (setq tab-always-indent t)                                ;; ?
-    )))
+(setq c-basic-offset 2)                                 ; Set indent width as 2
+(setq-default indent-tabs-mode nil)                     ; Use spaces for indent
+(setq default-tab-width 4)                              ; Set tab width as 4
 
-(show-paren-mode 1)                                       ;; Highlight parens
-(put 'downcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)                    ; disable downcase-region
 
 ;; ido-mode
 (require 'ido)
@@ -145,21 +65,6 @@
 (load "js2" t)
 (setq js2-mirror-mode nil)
 
-(require 'compile)
-;(add-to-list 'compilation-error-regexp-alist
-;             '("\\([^(:]+\\):\\([0-9]+\\):.+\n" 1 2 nil) t) ; for test/unit error
-;(add-to-list 'compilation-error-regexp-alist
-;             '("at \\([^(:]+\\):\\([0-9]+\\):.+\n" 1 2 nil) t) ; for test/unit error
-
-;;; lisp-mode
-(setq auto-mode-alist (append '(("\\.fc$" . lisp-mode)) auto-mode-alist))
-
-;;; disable menubar
-(menu-bar-mode 0)
-
-;;; flash instead of beep.
-;;(setq visible-bell nil)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; For SKK
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -188,23 +93,12 @@
 (global-set-key "\C-c\t"   'indent-region)
 (global-set-key [C-return] 'chrome-reload)
 
+;; Mac-OS-X上でchromeのリロードを行う
 (defun chrome-reload ()
   "Reload chrome"
   (interactive)
   (shell-command "~/bin/chrome-reload"))
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; For Migemo( ro-ma ji incremental search )
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (setq load-path (cons "~/share/migemo" load-path))
-;; (autoload 'migemo "migemo.el" nil t)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; For yahtml( yet another html-mode )
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (load-library "yahtml.el")
-;; (setq auto-mode-alist (append '(("\\.html$" . yahtml-mode)) auto-mode-alist))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; dired-mode colorize for windows
@@ -260,16 +154,15 @@
 ;  '(("txt" font-lock-variable-name-face)
 ;    ("lisp" "el" "pl" "c" "h" "cc" font-lock-constant-face)))
 
-(set-face-foreground 'font-lock-comment-face "red") ;; mac上でコメントが赤くならないのを修正
 
 ;
 ; auto-complete-mode
 ;
-(require 'auto-complete-config)
-(add-to-list 'ac-dictionary-directories "~/share/emacs/site-lisp/ac-dict")
+;(require 'auto-complete-config)
+;(add-to-list 'ac-dictionary-directories "~/share/emacs/site-lisp/ac-dict")
 
 ;(require 'auto-complete-clang)
-(ac-config-default)
+;(ac-config-default)
 
 ;(add-hook 'objc-mode-hook
 ;          (lambda()

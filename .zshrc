@@ -1,15 +1,16 @@
 # The following lines were added by compinstall
 zstyle :compinstall filename '/home/makoto/.zshrc'
 
+autoload colors
+colors
+
 autoload -U compinit
 compinit
-# End of lines added by compinstall
-# Lines configured by zsh-newuser-install
+
 HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=100000
 bindkey -e
-# End of lines configured by zsh-newuser-install
 
 #setopt hist_ignore_dups # 履歴の重複を避ける
 setopt share_history    # コマンド履歴を共有
@@ -20,9 +21,14 @@ setopt nolistbeep
 
 zstyle ':completion:*' list-colors 'di=34' 'ln=36' 'so=35' 'ex=32' 'bd=40;33' 'cd=40:33'
 
-# export from .bashrc
 alias cp='cp -i'
 alias mv='mv -i'
+alias e='emacs -nw'
+alias p='pwd'
+alias mk='make -e'
+alias euc='LANG=ja_JP.euc-jp'
+alias utf='LANG=ja_JP.utf-8'
+alias en='LANG=C'
 
 if [ `uname` = 'Darwin' ]; then
     alias ls='ls -G'
@@ -34,41 +40,37 @@ else
     alias ll='ls -l'
     alias la='ls -la'
 fi
-alias e='emacs -nw'
-alias p='pwd'
-alias mk='make -e'
-alias euc='LANG=ja_JP.euc-jp'
-alias utf='LANG=ja_JP.utf-8'
-alias en='LANG=C'
-alias php='/usr/bin/php'
 
 export LC_TIME=C
-export LANG=C
 export PATH=/usr/local/Cellar/ruby/1.9.3-p0/bin:/usr/local/bin:/opt/local/bin:~/bin:$PATH:
 export RUBYLIB=.:~/lib/ruby
 export EDITOR=emacs
-ulimit -c 1000000 # limit for core file
-
 export PGUSER='postgres'
 
-#
-autoload colors
-colors
+ulimit -c 1000000 # limit for core file
 
-RPROMPT="%{${fg[white]}%}   [%/]%{${reset_color}%}"
+
+# load setting for local
+[ -f ".zshrc-local.sh" ] && source .zshrc-local.sh
+
+
+# プロンプトの色を変える
 case ${UID} in
 	0)
+        # rootなら赤に
 		PROMPT="%{${fg[yellow]}%}${HOST}%{${fg[green]%}%}%%%{${reset_color}%} "
 		PROMPT2="%{${fg[cyan]}%}%_%{${fg[green]%}%}\$%{${reset_color}%} "
 		;;
 	*)
-	    PROMPT="%{${fg[white]}%}${HOST}%{${fg[green]%}%}\$%{${reset_color}%} "
+        # それ以外は白
+	    PROMPT="${HOST_COLOR}${HOST}%{${fg[green]%}%}\$%{${reset_color}%} "
 		PROMPT2="%{${fg[cyan]}%}%_%{${fg[green]%}%}\$%{${reset_color}%} "
-		[ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
-		PROMPT="%{${fg[red]}%}${HOST}%{${fg[green]%}%}\$%{${reset_color}%} "
 		;;
 esac
+# リモートアクセスの場合 @ をつける
+[ -n "${REMOTEHOST}${SSH_CONNECTION}" ] && PROMPT="%{${fg[red]}%}@%{${reset_color}%}${PROMPT}"
 
+# RVMの設定
 if [[ -s "$HOME/.rvm/scripts/rvm" ]]  ; then source "$HOME/.rvm/scripts/rvm" ; fi
 
 utf
