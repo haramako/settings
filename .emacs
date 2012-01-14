@@ -89,8 +89,8 @@
 (setq transient-mark-mode t)
 
 ;; customize by KON-H
-(setq c-basic-offset 4)                                 ;; Set indent width as 2
-(setq-default indent-tabs-mode t)                     ;; Use spaces for indent
+(setq c-basic-offset 2)                                 ;; Set indent width as 2
+(setq-default indent-tabs-mode nil)                     ;; Use spaces for indent
 (setq default-tab-width 4)                              ;; Set tab width as 4
 
 (let ((host (intern (or (getenv "HOSTNAME") ""))))
@@ -105,6 +105,10 @@
 (show-paren-mode 1)                                       ;; Highlight parens
 (put 'downcase-region 'disabled nil)
 
+;; ido-mode
+(require 'ido)
+(ido-mode t)
+
 ;; shell-script mode
 (setq auto-mode-alist
       (cons ' ( "\\.conf\\'" . shell-script-mode) auto-mode-alist))
@@ -114,6 +118,13 @@
 (setq auto-mode-alist (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
 (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
                                      interpreter-mode-alist))
+;;; Rinari for rails
+(add-to-list 'load-path "~/share/emacs/site-lisp/rinari")
+(require 'rinari)
+
+;;; haml-mode
+(autoload 'haml-mode "haml-mode" "alternate mode for editing haml")
+(setq auto-mode-alist (append '(("\\.haml$" . haml-mode)) auto-mode-alist))
 
 ; compilation-mode で自動ジャンプできるようにする
 (require 'compile)
@@ -177,7 +188,7 @@
 (global-set-key "\C-c\t"   'indent-region)
 (global-set-key [C-return] 'chrome-reload)
 
-(defun chrome-reload (start end &optional column)
+(defun chrome-reload ()
   "Reload chrome"
   (interactive)
   (shell-command "~/bin/chrome-reload"))
@@ -250,6 +261,19 @@
 ;    ("lisp" "el" "pl" "c" "h" "cc" font-lock-constant-face)))
 
 (set-face-foreground 'font-lock-comment-face "red") ;; mac上でコメントが赤くならないのを修正
+
+;
+; auto-complete-mode
+;
+(require 'auto-complete-config)
+(add-to-list 'ac-dictionary-directories "~/share/emacs/site-lisp/ac-dict")
+
+;(require 'auto-complete-clang)
+(ac-config-default)
+
+;(add-hook 'objc-mode-hook
+;          (lambda()
+;            (setq ac-sources (append '(ac-source-clang ac-source-yasnippet) ac-sources))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Customize by 'M-x customize'

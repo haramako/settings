@@ -44,7 +44,7 @@ alias php='/usr/bin/php'
 
 export LC_TIME=C
 export LANG=C
-export PATH=$PATH:/opt/local/bin:~/bin
+export PATH=/usr/local/Cellar/ruby/1.9.3-p0/bin:/usr/local/bin:/opt/local/bin:~/bin:$PATH:
 export RUBYLIB=.:~/lib/ruby
 export EDITOR=emacs
 ulimit -c 1000000 # limit for core file
