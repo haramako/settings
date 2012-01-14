@@ -42,7 +42,7 @@ else
 fi
 
 export LC_TIME=C
-export PATH=/usr/local/Cellar/ruby/1.9.3-p0/bin:/usr/local/bin:/opt/local/bin:~/bin:$PATH:
+export PATH=~/bin:~/.setting/bin:$PATH
 export RUBYLIB=.:~/lib/ruby
 export EDITOR=emacs
 export PGUSER='postgres'
@@ -55,20 +55,55 @@ ulimit -c 1000000 # limit for core file
 
 
 # プロンプトの色を変える
+RPROMPT="%{${fg[white]}%}   [%/]%{${reset_color}%}"
+PROMPT2="%{${fg[cyan]}%}%_%{${fg[green]%}%}\$%{${reset_color}%} "
 case ${UID} in
 	0)
         # rootなら赤に
 		PROMPT="%{${fg[yellow]}%}${HOST}%{${fg[green]%}%}%%%{${reset_color}%} "
-		PROMPT2="%{${fg[cyan]}%}%_%{${fg[green]%}%}\$%{${reset_color}%} "
 		;;
 	*)
         # それ以外は白
 	    PROMPT="${HOST_COLOR}${HOST}%{${fg[green]%}%}\$%{${reset_color}%} "
-		PROMPT2="%{${fg[cyan]}%}%_%{${fg[green]%}%}\$%{${reset_color}%} "
 		;;
 esac
 # リモートアクセスの場合 @ をつける
 [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] && PROMPT="%{${fg[red]}%}@%{${reset_color}%}${PROMPT}"
+
+
+export EDITOR=emacs
+export PGUSER='postgres'
+
+ulimit -c 1000000 # limit for core file
+
+# load setting for local
+[ -f ".zshrc-local.sh" ] && source .zshrc-local.sh
+
+
+# プロンプトの色を変える
+RPROMPT="%{${fg[white]}%}   [%/]%{${reset_color}%}"
+PROMPT2="%{${fg[cyan]}%}%_%{${fg[green]%}%}\$%{${reset_color}%} "
+case ${UID} in
+	0)
+        # rootなら赤に
+		PROMPT="%{${fg[yellow]}%}${HOST}%{${fg[green]%}%}%%%{${reset_color}%} "
+		;;
+	*)
+        # それ以外は白
+	    PROMPT="${HOST_COLOR}${HOST}%{${fg[green]%}%}\$%{${reset_color}%} "
+		;;
+esac
+# リモートアクセスの場合 @ をつける
+[ -n "${REMOTEHOST}${SSH_CONNECTION}" ] && PROMPT="%{${fg[red]}%}@%{${reset_color}%}${PROMPT}"
+
+# ターミナルタイトルの設定
+case "${TERM}" in
+kterm*|xterm)
+    precmd() {
+        echo -ne "\033]0;${USER}@${HOST%%.*}:${PWD}\007"
+    }
+    ;;
+esac
 
 # RVMの設定
 if [[ -s "$HOME/.rvm/scripts/rvm" ]]  ; then source "$HOME/.rvm/scripts/rvm" ; fi
