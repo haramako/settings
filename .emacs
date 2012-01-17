@@ -26,6 +26,15 @@
 
 (put 'downcase-region 'disabled nil)                    ; disable downcase-region
 
+;;; バックアップファイルの保存場所を指定。
+(setq backup-directory-alist
+      (cons (cons "\\.*$" (expand-file-name "~/.emacs.d/backup"))
+            backup-directory-alist))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; mode special setting
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; ido-mode
 (require 'ido)
 (ido-mode t)
