@@ -51,7 +51,7 @@ ulimit -c 1000000 # limit for core file
 
 
 # load setting for local
-[ -f ".zshrc-local.sh" ] && source ~/.zshrc-local.sh
+[ -f ~/.zshrc-local.sh ] && source ~/.zshrc-local.sh
 
 
 # プロンプトの色を変える
