@@ -27,9 +27,18 @@
 
 (put 'downcase-region 'disabled nil)                    ; disable downcase-region
 
+;;; バックアップファイルの保存場所を指定。
+(setq backup-directory-alist
+      (cons (cons "\\.*$" (expand-file-name "~/.emacs.d/backup"))
+            backup-directory-alist))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; mode special setting
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;; ido-mode
-(require 'ido)
-(ido-mode t)
+(when (require 'ido nil t)
+  (ido-mode t))
 
 ;; shell-script mode
 (setq auto-mode-alist
@@ -42,7 +51,7 @@
                                      interpreter-mode-alist))
 ;;; Rinari for rails
 (add-to-list 'load-path "~/.setting/share/emacs/site-lisp/rinari")
-(require 'rinari)
+(require 'rinari nil t)
 
 ;;; haml-mode
 (autoload 'haml-mode "haml-mode" "alternate mode for editing haml")
@@ -64,8 +73,12 @@
           '(lambda ()
              (local-set-key "\r" 'newline-and-indent)))
 
-(load "js2" t)
-(setq js2-mirror-mode nil)
+;;; lua-mode
+(autoload 'lua-mode "lua-mode" "alternate mode for editing ruby programs")
+(setq auto-mode-alist (append '(("\\.lua$" . lua-mode)) auto-mode-alist))
+
+;;(load "js2" t)
+;;(setq js2-mirror-mode nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; For SKK
