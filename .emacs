@@ -13,6 +13,7 @@
 ;;; setting for os
 (if (eq window-system 'w32) (require 'window-system-w32))
 (if (eq window-system 'mac) (require 'window-system-mac))
+(if (eq system-type 'darwin) (require 'system-type-darwin))
 
 ;; customize by KON-H
 (global-font-lock-mode 1 t)                             ; turn on font-lock mode
@@ -98,7 +99,7 @@
 (defun chrome-reload ()
   "Reload chrome"
   (interactive)
-  (shell-command "~/bin/chrome-reload"))
+  (shell-command "~/.setting/bin/chrome-reload"))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
