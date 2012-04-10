@@ -7,7 +7,7 @@
 (setq load-path (cons "~/.setting/share/emacs/site-lisp" load-path))
 
 ;;; load setting for local
-(if (file-readable-p "~/.emacs-local.el") 
+(if (file-readable-p "~/.emacs-local.el")
     (load "~/.emacs-local.el"))
 
 ;;; setting for os
@@ -59,10 +59,10 @@
 
 ; compilation-mode で自動ジャンプできるようにする
 (require 'compile)
-(add-to-list 'compilation-error-regexp-alist
-			 '("\\[\\(.+\\):\\([0-9]+\\)" 1 2 nil) t) ; for test/unit assertion
-(add-to-list 'compilation-error-regexp-alist
-			 '("\\([^ ]+\\):\\([0-9]+\\):in" 1 2 nil) t) ; for test/unit error
+;(add-to-list 'compilation-error-regexp-alist
+;			 '("\\[\\(.+\\):\\([0-9]+\\)" 1 2 nil) t) ; for test/unit assertion
+;(add-to-list 'compilation-error-regexp-alist
+;			 '("\\([^ ]+\\):\\([0-9]+\\):in" 1 2 nil) t) ; for test/unit error
 
 ;;; javascript-mode
 (autoload 'js2-mode "js2" "mode for javascript programs")
@@ -76,6 +76,13 @@
 ;;; lua-mode
 (autoload 'lua-mode "lua-mode" "alternate mode for editing ruby programs")
 (setq auto-mode-alist (append '(("\\.lua$" . lua-mode)) auto-mode-alist))
+
+;;; coffee-mode
+(autoload 'coffee-mode "coffee-mode" "alternate mode for editing coffee-script programs")
+(setq auto-mode-alist (append '(("\\.coffee$" . coffee-mode)) auto-mode-alist))
+(setq auto-mode-alist (append '(("Cakefile$" . coffee-mode)) auto-mode-alist))
+;;(add-to-list 'compilation-error-regexp-alist
+;;			 '("at \\(.+\\.coffee\\):\\([0-9]+\\):\\([0-9]+\\)" 1 2 3) nil) ; for test/unit assertion
 
 ;;(load "js2" t)
 ;;(setq js2-mirror-mode nil)

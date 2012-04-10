@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 if [ "$1" = '' ]; then
     echo 'C/C++ runner'
-    echo 'Usage: crunner <source file>'
+    echo 'Usage: crunner <source>'
+    exit 1
 fi
 SRC=$1
 TARGET=`mktemp -t crunner`
-g++ $SRC -o $TARGET
-$TARGET
+g++ $SRC -o $TARGET && $TARGET
