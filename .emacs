@@ -74,12 +74,14 @@
              (local-set-key "\r" 'newline-and-indent)))
 
 ;;; lua-mode
-(autoload 'lua-mode "lua-mode" "alternate mode for editing ruby programs")
+(autoload 'lua-mode "lua-mode" "alternate mode for editing lua programs")
 (setq auto-mode-alist (append '(("\\.lua$" . lua-mode)) auto-mode-alist))
 
 ;;; coffee-mode
 (autoload 'coffee-mode "coffee-mode" "alternate mode for editing coffee-script programs")
 (setq auto-mode-alist (append '(("\\.coffee$" . coffee-mode)) auto-mode-alist))
+(setq interpreter-mode-alist (append '(("coffee" . coffee-mode))
+                                     interpreter-mode-alist))
 (setq auto-mode-alist (append '(("Cakefile$" . coffee-mode)) auto-mode-alist))
 ;;(add-to-list 'compilation-error-regexp-alist
 ;;			 '("at \\(.+\\.coffee\\):\\([0-9]+\\):\\([0-9]+\\)" 1 2 3) nil) ; for test/unit assertion
