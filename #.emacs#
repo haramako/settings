@@ -16,8 +16,8 @@
 (if (eq system-type 'darwin) (require 'system-type-darwin))
 
 ;; customize by KON-H
-(global-font-lock-mode t)                             ; turn on font-lock mode
-(setq transient-mark-mode t)                            ; enable visual feedback on selections
+(global-font-lock-mode 1 t)                             ; turn on font-lock mode
+(setq transient-amrk-mode t)                            ; enable visual feedback on selections
 (menu-bar-mode 0)                                       ; disable menubar
 (show-paren-mode 1)                                     ; Highlight parens
 
@@ -129,7 +129,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (load "dired")
 
-(if (or (string-equal window-system "x") (string-equal window-system "w32") (string-equal window-system "mac") (string-equal window-system "ns"))
+(if (or (string-equal window-system "x") (string-equal window-system "w32") (string-equal window-system "mac"))
     (progn
       (tool-bar-mode 0) ;; ツールバーを隠す
       (set-background-color "#102418")
