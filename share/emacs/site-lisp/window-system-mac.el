@@ -11,3 +11,4 @@
                     :family "Ricty"
                     :height 140)
 
+(setq mac-command-modifier 'meta)

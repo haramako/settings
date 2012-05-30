@@ -13,6 +13,7 @@
 ;;; setting for os
 (if (eq window-system 'w32) (require 'window-system-w32))
 (if (eq window-system 'mac) (require 'window-system-mac))
+(if (eq window-system 'ns) (require 'window-system-mac))
 (if (eq system-type 'darwin) (require 'system-type-darwin))
 
 ;; customize by KON-H
@@ -27,6 +28,10 @@
 
 (put 'downcase-region 'disabled nil)                    ; disable downcase-region
 
+;;; "\"を"￥"で打つようにする
+(define-key global-map [165] nil)
+(define-key function-key-map [165] [?\\])
+
 ;;; バックアップファイルの保存場所を指定。
 (setq backup-directory-alist
       (cons (cons "\\.*$" (expand-file-name "~/.emacs.d/backup"))
@@ -35,6 +40,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; mode special setting
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(require 'compile)
 
 ;; ido-mode
 (when (require 'ido nil t)
@@ -56,13 +63,6 @@
 ;;; haml-mode
 (autoload 'haml-mode "haml-mode" "alternate mode for editing haml")
 (setq auto-mode-alist (append '(("\\.haml$" . haml-mode)) auto-mode-alist))
-
-; compilation-mode で自動ジャンプできるようにする
-(require 'compile)
-;(add-to-list 'compilation-error-regexp-alist
-;			 '("\\[\\(.+\\):\\([0-9]+\\)" 1 2 nil) t) ; for test/unit assertion
-;(add-to-list 'compilation-error-regexp-alist
-;			 '("\\([^ ]+\\):\\([0-9]+\\):in" 1 2 nil) t) ; for test/unit error
 
 ;;; javascript-mode
 (autoload 'js2-mode "js2" "mode for javascript programs")
@@ -88,6 +88,27 @@
 
 ;;(load "js2" t)
 ;;(setq js2-mirror-mode nil)
+
+; compilation-mode で自動ジャンプできるようにする
+(add-to-list 'compilation-error-regexp-alist-alist
+             '(ruby "\\([^ \n]+\\):\\([0-9]+\\):in" 1 2 nil)) ; for ruby
+(add-to-list 'compilation-error-regexp-alist 'ruby)
+;(add-to-list 'compilation-error-regexp-alist
+;			 '("\\[\\(.+\\):\\([0-9]+\\)" 1 2 nil) t) ; for test/unit assertion
+;(add-to-list 'compilation-error-regexp-alist
+;			 '("\\([^ ]+\\):\\([0-9]+\\):in" 1 2 nil) t) ; for test/unit error
+
+;; compilation-modeで
+;; ruby の "from hoge.rb:99: error message"のようなメッセージを間違ってエラーとして解釈してしまうのを修正
+(setcdr (assoc 'gnu compilation-error-regexp-alist-alist)
+'( "^\\(?:[[:alpha:]][-[:alnum:].]+: ?\\)?\
+\\([0-9]*[^0-9\n]\\(?:[^\n ]\\)*?\\): ?\
+\\([0-9]+\\)\\(?:\\([.:]\\)\\([0-9]+\\)\\)?\
+\\(?:-\\([0-9]+\\)?\\(?:\\.\\([0-9]+\\)\\)?\\)?:\
+\\(?: *\\(\\(?:Future\\|Runtime\\)?[Ww]arning\\|W:\\)\\|\
+ *\\([Ii]nfo\\(?:\\>\\|rmationa?l?\\)\\|I:\\|instantiated from\\|[Nn]ote\\)\\|\
+\[0-9]?\\(?:[^0-9\n]\\|$\\)\\|[0-9][0-9][0-9]\\)"
+ 1 (2 . 5) (4 . 6) (7 . 8)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; For SKK
@@ -129,7 +150,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (load "dired")
 
-(if (or (string-equal window-system "x") (string-equal window-system "w32") (string-equal window-system "mac") (string-equal window-system "ns"))
+(if window-system
     (progn
       (tool-bar-mode 0) ;; ツールバーを隠す
       (set-background-color "#102418")
