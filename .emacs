@@ -72,6 +72,11 @@
 (setq js2-mirror-mode nil)
 (add-hook 'js2-mode-hook
           '(lambda ()
+             (require 'espresso)
+             (setq espresso-indent-level 2
+                   espresso-expr-indent-offset 2
+                   indent-tabs-mode nil)
+             (set (make-local-variable 'indent-line-function) 'espresso-indent-line)
              (local-set-key "\r" 'newline-and-indent)))
 
 ;;; lua-mode
