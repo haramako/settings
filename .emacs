@@ -69,6 +69,7 @@
 (setq auto-mode-alist (append '(("\\.js$" . js2-mode)) auto-mode-alist))
 (setq interpreter-mode-alist (append '(("javascript" . js2-mode))
                                      interpreter-mode-alist))
+(setq js2-mirror-mode nil)
 (add-hook 'js2-mode-hook
           '(lambda ()
              (local-set-key "\r" 'newline-and-indent)))
@@ -89,10 +90,19 @@
 ;;(load "js2" t)
 ;;(setq js2-mirror-mode nil)
 
+;;; fc as c-mode
+(setq auto-mode-alist (append '(("\\.fc$" . c-mode)) auto-mode-alist))
+
+;;; markdown-mode
+(autoload 'markdown-mode "markdown-mode" "alternate mode for editing markdown")
+(setq auto-mode-alist (append '(("\\.md$" . markdown-mode)) auto-mode-alist))
+
 ; compilation-mode で自動ジャンプできるようにする
 (add-to-list 'compilation-error-regexp-alist-alist
-             '(ruby "\\([^ \n]+\\):\\([0-9]+\\):in" 1 2 nil)) ; for ruby
+             '(ruby "\\([^ \n]+\\):\\([0-9]+\\):in" 1 2 nil)) ; for ruby's "    from hoge.rb:99: error message"
 (add-to-list 'compilation-error-regexp-alist 'ruby)
+(add-to-list 'compilation-error-regexp-alist-alist
+             '(node-js "at .+ (\\([^ \n]+\\):\\([0-9]+\\):\\([0-9]+\\))" 1 2 nil)) ; for node-js's "    at Object.<hoge> (hoge.js:99:11)"
 ;(add-to-list 'compilation-error-regexp-alist
 ;			 '("\\[\\(.+\\):\\([0-9]+\\)" 1 2 nil) t) ; for test/unit assertion
 ;(add-to-list 'compilation-error-regexp-alist
@@ -109,6 +119,10 @@
  *\\([Ii]nfo\\(?:\\>\\|rmationa?l?\\)\\|I:\\|instantiated from\\|[Nn]ote\\)\\|\
 \[0-9]?\\(?:[^0-9\n]\\|$\\)\\|[0-9][0-9][0-9]\\)"
  1 (2 . 5) (4 . 6) (7 . 8)))
+
+;; 一部のモードが邪魔をするため減らす
+(setq compilation-error-regexp-alist
+      '(ruby node-js bash gnu gcc-include perl))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; For SKK

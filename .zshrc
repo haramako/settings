@@ -42,7 +42,7 @@ else
 fi
 
 export LC_TIME=C
-export PATH=~/bin:~/.setting/bin:$PATH
+export PATH=~/bin:~/.setting/bin:~/node_modules/.bin:$PATH
 export RUBYLIB=.:~/lib/ruby
 export EDITOR=emacs
 export PGUSER='postgres'
