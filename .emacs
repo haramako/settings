@@ -113,6 +113,12 @@
 ;(add-to-list 'compilation-error-regexp-alist
 ;			 '("\\([^ ]+\\):\\([0-9]+\\):in" 1 2 nil) t) ; for test/unit error
 
+;;; php-mode
+(autoload 'php-mode "php-mode" "alternate mode for editing php programs")
+(setq auto-mode-alist (append '(("\\.php$" . php-mode)) auto-mode-alist))
+(setq interpreter-mode-alist (append '(("php" . php-mode))
+                                     interpreter-mode-alist))
+
 ;; compilation-modeで
 ;; ruby の "from hoge.rb:99: error message"のようなメッセージを間違ってエラーとして解釈してしまうのを修正
 (setcdr (assoc 'gnu compilation-error-regexp-alist-alist)
@@ -240,3 +246,8 @@
   ;; Your init file should contain only one such instance.
  )
 
+;;; ELPA( Emacs Lisp Package Archive) 
+(when
+    (load
+     (expand-file-name "~/.emacs.d/elpa/package.el"))
+  (package-initialize))
