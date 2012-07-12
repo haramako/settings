@@ -1,0 +1,11 @@
+#!/usr/bin/env php
+<?php
+
+if( count( $argv ) >= 2 ){
+	$f = fopen( $argv[1], 'rb' );
+}else{
+	$f = fopen('php://stdin','rb');
+}
+
+$text = fread( $f, 1024*1024 );
+print_r( unserialize( $text ) );
