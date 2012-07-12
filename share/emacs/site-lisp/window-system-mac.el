@@ -3,12 +3,14 @@
 (provide 'window-system-mac)
 
 ;; setting fonts
+(set-face-attribute 'default nil
+					:family "Ricty"
+					:height 140)
+(set-fontset-font "fontset-default"
+                  'unicode
+                  '("Ricty" . "iso10646-1"))
 (set-fontset-font "fontset-default"
                   'japanese-jisx0208
-                  '("Ricty" . "iso10646-*"))
-
-(set-face-attribute 'default nil
-                    :family "Ricty"
-                    :height 140)
+                  '("Ricty" . "iso10646-1"))
 
 (setq mac-command-modifier 'meta)

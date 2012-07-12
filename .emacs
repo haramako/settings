@@ -22,8 +22,8 @@
 (menu-bar-mode 0)                                       ; disable menubar
 (show-paren-mode 1)                                     ; Highlight parens
 
-(setq c-basic-offset 2)                                 ; Set indent width as 2
-(setq-default indent-tabs-mode nil)                     ; Use spaces for indent
+(setq c-basic-offset 4)                                 ; Set indent width as 4
+(setq-default indent-tabs-mode t)                       ; Use tabs for indent
 (setq default-tab-width 4)                              ; Set tab width as 4
 
 (put 'downcase-region 'disabled nil)                    ; disable downcase-region
@@ -73,9 +73,9 @@
 (add-hook 'js2-mode-hook
           '(lambda ()
              (require 'espresso)
-             (setq espresso-indent-level 2
-                   espresso-expr-indent-offset 2
-                   indent-tabs-mode nil)
+             (setq espresso-indent-level 4
+                   espresso-expr-indent-offset 4
+                   indent-tabs-mode t)
              (set (make-local-variable 'indent-line-function) 'espresso-indent-line)
              (local-set-key "\r" 'newline-and-indent)))
 
