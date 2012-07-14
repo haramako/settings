@@ -1,10 +1,11 @@
 ;; .emacs
 
-;;; uncomment this line to disable loading of "default.el" at startup
-;; (setq inhibit-default-init t)
-
 ;;; add load path
 (setq load-path (cons "~/.setting/share/emacs/site-lisp" load-path))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; basic setting
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; load setting for local
 (if (file-readable-p "~/.emacs-local.el")
@@ -38,20 +39,17 @@
             backup-directory-alist))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; mode special setting
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(require 'compile)
-
 ;; ido-mode
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (when (require 'ido nil t)
   (ido-mode t))
 
-;; shell-script mode
-(setq auto-mode-alist
-      (cons ' ( "\\.conf\\'" . shell-script-mode) auto-mode-alist))
 
-;;; ruby-mode
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ruby
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; ruby-mode basic-setting
 (autoload 'ruby-mode "ruby-mode" "alternate mode for editing ruby programs")
 (setq auto-mode-alist (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
 (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
@@ -59,6 +57,17 @@
 ;;; Rinari for rails
 (add-to-list 'load-path "~/.setting/share/emacs/site-lisp/rinari")
 (require 'rinari nil t)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; mode special setting
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'compile)
+
+;; shell-script mode
+(setq auto-mode-alist
+      (cons ' ( "\\.conf\\'" . shell-script-mode) auto-mode-alist))
+(setq auto-mode-alist
+      (cons ' ( "\\.cnf\\'" . shell-script-mode) auto-mode-alist))
 
 ;;; haml-mode
 (autoload 'haml-mode "haml-mode" "alternate mode for editing haml")
@@ -92,9 +101,6 @@
 ;;(add-to-list 'compilation-error-regexp-alist
 ;;			 '("at \\(.+\\.coffee\\):\\([0-9]+\\):\\([0-9]+\\)" 1 2 3) nil) ; for test/unit assertion
 
-;;(load "js2" t)
-;;(setq js2-mirror-mode nil)
-
 ;;; fc as c-mode
 (setq auto-mode-alist (append '(("\\.fc$" . c-mode)) auto-mode-alist))
 
@@ -102,7 +108,16 @@
 (autoload 'markdown-mode "markdown-mode" "alternate mode for editing markdown")
 (setq auto-mode-alist (append '(("\\.md$" . markdown-mode)) auto-mode-alist))
 
-; compilation-mode で自動ジャンプできるようにする
+;;; php-mode
+(autoload 'php-mode "php-mode" "alternate mode for editing php programs")
+(setq auto-mode-alist (append '(("\\.php$" . php-mode)) auto-mode-alist))
+(setq interpreter-mode-alist (append '(("php" . php-mode))
+                                     interpreter-mode-alist))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; compilation-mode で自動ジャンプできるようにする
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (add-to-list 'compilation-error-regexp-alist-alist
              '(ruby "\\([^ \n]+\\):\\([0-9]+\\):in" 1 2 nil)) ; for ruby's "    from hoge.rb:99: error message"
 (add-to-list 'compilation-error-regexp-alist 'ruby)
@@ -112,12 +127,6 @@
 ;			 '("\\[\\(.+\\):\\([0-9]+\\)" 1 2 nil) t) ; for test/unit assertion
 ;(add-to-list 'compilation-error-regexp-alist
 ;			 '("\\([^ ]+\\):\\([0-9]+\\):in" 1 2 nil) t) ; for test/unit error
-
-;;; php-mode
-(autoload 'php-mode "php-mode" "alternate mode for editing php programs")
-(setq auto-mode-alist (append '(("\\.php$" . php-mode)) auto-mode-alist))
-(setq interpreter-mode-alist (append '(("php" . php-mode))
-                                     interpreter-mode-alist))
 
 ;; compilation-modeで
 ;; ruby の "from hoge.rb:99: error message"のようなメッセージを間違ってエラーとして解釈してしまうのを修正
@@ -142,6 +151,11 @@
 ;;(global-set-key "\C-x\C-j" 'skk-mode)
 ;;(require 'skk-setup)
 ;;(setq skk-large-jisyo "~/SKK-JISYO.L")
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; key bindings
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; buffer moving
 (setq windomove-wrap-around t)
@@ -175,6 +189,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (load "dired")
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; color setting
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (if window-system
     (progn
       (tool-bar-mode 0) ;; ツールバーを隠す
@@ -239,6 +256,14 @@
 ;            (setq ac-sources (append '(ac-source-clang ac-source-yasnippet) ac-sources))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ELPA( Emacs Lisp Package Archive) 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(when
+    (load
+     (expand-file-name "~/.emacs.d/elpa/package.el"))
+  (package-initialize))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Customize by 'M-x customize'
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables
@@ -246,8 +271,3 @@
   ;; Your init file should contain only one such instance.
  )
 
-;;; ELPA( Emacs Lisp Package Archive) 
-(when
-    (load
-     (expand-file-name "~/.emacs.d/elpa/package.el"))
-  (package-initialize))
