@@ -111,8 +111,16 @@
 ;;; php-mode
 (autoload 'php-mode "php-mode" "alternate mode for editing php programs")
 (setq auto-mode-alist (append '(("\\.php$" . php-mode)) auto-mode-alist))
+(setq auto-mode-alist (append '(("/app/views/.+\\.php$" . html-mode)) auto-mode-alist))
 (setq interpreter-mode-alist (append '(("php" . php-mode))
                                      interpreter-mode-alist))
+; change indent
+(add-hook 'php-mode-hook
+          (lambda ()
+            (c-set-offset 'case-label' 4)
+            (c-set-offset 'arglist-intro' 4)
+            (c-set-offset 'arglist-cont-nonempty' 4)
+            (c-set-offset 'arglist-close' 0)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; compilation-mode で自動ジャンプできるようにする
