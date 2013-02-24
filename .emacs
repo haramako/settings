@@ -1,7 +1,20 @@
 ;; .emacs
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; ELPA( Emacs Lisp Package Archive) 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(when
+    (load
+     (expand-file-name "~/.setting/share/emacs/site-lisp/package.el"))
+  (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+  (package-initialize))
+
 ;;; add load path
 (setq load-path (cons "~/.setting/share/emacs/site-lisp" load-path))
+
+;;; See: http://e-arrows.sakura.ne.jp/2010/03/macros-in-emacs-el.html
+(defmacro require-if-exists (lib &rest body)
+  `(when (require ,lib nil t) ,@body))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic setting
@@ -29,6 +42,8 @@
 
 (put 'downcase-region 'disabled nil)                    ; disable downcase-region
 
+(setq split-height-threshold 999)                       ; disable auto split
+
 ;;; "\"を"￥"で打つようにする
 (define-key global-map [165] nil)
 (define-key function-key-map [165] [?\\])
@@ -45,8 +60,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ido-mode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(when (require 'ido nil t)
-  (ido-mode t))
+(require-if-exists 'ido (ido-mode t) 1)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -56,11 +70,26 @@
 ;;; ruby-mode basic-setting
 (autoload 'ruby-mode "ruby-mode" "alternate mode for editing ruby programs")
 (setq auto-mode-alist (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
+(setq auto-mode-alist (append '(("Gemfile$" . ruby-mode)) auto-mode-alist))
+(setq auto-mode-alist (append '(("Capfile$" . ruby-mode)) auto-mode-alist))
+(setq auto-mode-alist (append '(("Rakefile$" . ruby-mode)) auto-mode-alist))
+(setq auto-mode-alist (append '(("config.ru$" . ruby-mode)) auto-mode-alist))
 (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
                                      interpreter-mode-alist))
 ;;; Rinari for rails
 (add-to-list 'load-path "~/.setting/share/emacs/site-lisp/rinari")
 (require 'rinari nil t)
+
+;;;
+(add-hook 'ruby-mode-hook
+		  '(lambda ()
+			 (require 'cl)
+			 (require 'rcodetools)
+			 (require 'auto-complete-config)
+			 (ac-config-default)
+			 (define-key ruby-mode-map (kbd "C-u") 'ac-start)
+			 (define-key ruby-mode-map (kbd "C-c o") 'xmp)
+			 ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; mode special setting
@@ -102,6 +131,10 @@
 (setq interpreter-mode-alist (append '(("coffee" . coffee-mode))
                                      interpreter-mode-alist))
 (setq auto-mode-alist (append '(("Cakefile$" . coffee-mode)) auto-mode-alist))
+(add-hook 'coffee-mode-hook
+		  '(lambda()
+			 (set (make-local-variable 'tab-width) 2)
+			 (setq coffee-tab-width 2)))
 ;;(add-to-list 'compilation-error-regexp-alist
 ;;			 '("at \\(.+\\.coffee\\):\\([0-9]+\\):\\([0-9]+\\)" 1 2 3) nil) ; for test/unit assertion
 
@@ -115,9 +148,15 @@
 ;;; php-mode
 (autoload 'php-mode "php-mode" "alternate mode for editing php programs")
 (setq auto-mode-alist (append '(("\\.php$" . php-mode)) auto-mode-alist))
-(setq auto-mode-alist (append '(("/app/views/.+\\.php$" . html-mode)) auto-mode-alist))
+(setq auto-mode-alist (append '(("/app/views/.+\\.php$" . web-mode)) auto-mode-alist))
 (setq interpreter-mode-alist (append '(("php" . php-mode))
                                      interpreter-mode-alist))
+
+;;; web-mode
+(autoload 'web-mode "web-mode" "Majar mode for html")
+(setq auto-mode-alist (append '(("\\.html$" . web-mode)) auto-mode-alist))
+(setq auto-mode-alist (append '(("\\.erb$" . web-mode)) auto-mode-alist))
+
 ; change indent
 (add-hook 'php-mode-hook
           (lambda ()
@@ -223,6 +262,7 @@
       (set-face-foreground 'font-lock-string-face "#b06040")
       (set-face-foreground 'font-lock-variable-name-face "#c0a040")
       (set-face-foreground 'font-lock-keyword-face "#6060b0")
+      (set-face-foreground 'font-lock-doc-face "#40b040")
       (set-face-foreground 'dired-ignored "#606060") ;; バックアップファイルなど
       ))
 
@@ -241,21 +281,9 @@
     (setq dired-font-lock-keywords
           (append *original-dired-font-lock-keywords* lst))))
 
-(defvar *original-dired-font-lock-keywords* dired-font-lock-keywords)
-(defun dired-highlight-by-extensions (highlight-list)
-  "highlight-list accept list of (regexp [regexp] ... face)."
-  (let ((lst nil))
-    (dolist (highlight highlight-list)
-      (push `(,(concat "\\(" (regexp-opt (butlast highlight)) "\\)$")
-              (".+" (dired-move-to-filename)
-               nil (0 ,(car (last highlight)))))
-            lst))
-    (setq dired-font-lock-keywords
-          (append *original-dired-font-lock-keywords* lst))))
-
-;(dired-highlight-by-extensions
-;  '(("txt" font-lock-variable-name-face)
-;    ("lisp" "el" "pl" "c" "h" "cc" font-lock-constant-face)))
+(dired-highlight-by-extensions
+  '(("txt" font-lock-variable-name-face)
+    ("lisp" "el" "pl" "c" "h" "cc" font-lock-constant-face)))
 
 
 ;
@@ -272,12 +300,12 @@
 ;            (setq ac-sources (append '(ac-source-clang ac-source-yasnippet) ac-sources))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; ELPA( Emacs Lisp Package Archive) 
+;; emacs-keybind
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;(when
-;    (load
-;     (expand-file-name "~/.setting/share/emacs/site-lisp/package.el"))
-;  (package-initialize))
+(require-if-exists 'emacs-keybind
+				   (setq emacs-keybind-program-file "~/.setting/share/emacs/site-lisp/emacs_keybind.rb")
+				   (setq emacs-keybind-keyboard-kind "japanese")
+				   (setq emacs-keybind-work-dir "/Users/makoto/.emacs.d"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Customize by 'M-x customize'
