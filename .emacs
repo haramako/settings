@@ -9,8 +9,9 @@
   (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
   (package-initialize))
 
-;;; add load path
+;;; add to paths
 (setq load-path (cons "~/.setting/share/emacs/site-lisp" load-path))
+(add-to-list 'exec-path "/usr/local/bin")
 
 ;;; See: http://e-arrows.sakura.ne.jp/2010/03/macros-in-emacs-el.html
 (defmacro require-if-exists (lib &rest body)
@@ -89,6 +90,8 @@
 			 (ac-config-default)
 			 (define-key ruby-mode-map (kbd "C-u") 'ac-start)
 			 (define-key ruby-mode-map (kbd "C-c o") 'xmp)
+			 ;; highlight for RSpec
+			 (add-to-list 'ruby-font-lock-keywords '("\\.\\(should_not\\|should\\)" 0 font-lock-keyword-face) t)
 			 ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -156,6 +159,7 @@
 (autoload 'web-mode "web-mode" "Majar mode for html")
 (setq auto-mode-alist (append '(("\\.html$" . web-mode)) auto-mode-alist))
 (setq auto-mode-alist (append '(("\\.erb$" . web-mode)) auto-mode-alist))
+(setq auto-mode-alist (append '(("\\.ejs$" . web-mode)) auto-mode-alist))
 
 ; change indent
 (add-hook 'php-mode-hook
@@ -168,13 +172,16 @@
 ;;; asm mode
 (setq tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80 84 88 92 96 100 104 108 112 116 120))
 
+;;; go-mode
+(autoload 'go-mode "go-mode" "Majar mode for go")
+(setq auto-mode-alist (append '(("\\.go$" . go-mode)) auto-mode-alist))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; compilation-mode で自動ジャンプできるようにする
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (add-to-list 'compilation-error-regexp-alist-alist
-             '(ruby "\\([^ \n]+\\):\\([0-9]+\\):in" 1 2 nil)) ; for ruby's "    from hoge.rb:99: error message"
+             '(ruby "\\([^ \t\n]+\\):\\([0-9]+\\):in" 1 2 nil)) ; for ruby's "    from hoge.rb:99: error message"
 (add-to-list 'compilation-error-regexp-alist 'ruby)
 (add-to-list 'compilation-error-regexp-alist-alist
              '(node-js "at .+ (\\([^ \n]+\\):\\([0-9]+\\):\\([0-9]+\\))" 1 2 nil)) ; for node-js's "    at Object.<hoge> (hoge.js:99:11)"
@@ -195,9 +202,17 @@
 \[0-9]?\\(?:[^0-9\n]\\|$\\)\\|[0-9][0-9][0-9]\\)"
  1 (2 . 5) (4 . 6) (7 . 8)))
 
+;; complation for python
+(add-to-list 'compilation-error-regexp-alist-alist
+			 '(python "^ *File \"\\([^,\" \n\t]+\\)\", line \\([0-9]+\\)" 1 2))
+
+;; complation for go
+(add-to-list 'compilation-error-regexp-alist-alist
+			 '(golang "^\t\\([^,\" \n\t:]+\\):\\([0-9]+\\) \\+" 1 2))
+
 ;; 一部のモードが邪魔をするため減らす
 (setq compilation-error-regexp-alist
-      '(ruby node-js bash gnu gcc-include perl))
+      '(node-js bash gnu gcc-include perl python ruby golang))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; For SKK
@@ -247,11 +262,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; color setting
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(if window-system
+;(if window-system
     (progn
       (tool-bar-mode 0) ;; ツールバーを隠す
       (set-background-color "#102418")
-      (set-foreground-color "#b0b0b0")
+      (set-foreground-color "#d0d0d0")
       (set-cursor-color "#ff4040")
       (set-face-foreground 'modeline "Black")
       (set-face-background 'modeline "DarkKhaki")
@@ -264,7 +279,14 @@
       (set-face-foreground 'font-lock-keyword-face "#6060b0")
       (set-face-foreground 'font-lock-doc-face "#40b040")
       (set-face-foreground 'dired-ignored "#606060") ;; バックアップファイルなど
-      ))
+      );)
+
+(if (not window-system)
+	(progn
+	  (set-background-color "#000000")
+      (set-foreground-color "#d0d0d0")
+	  ))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; For Dired-modeで色をつける
@@ -281,9 +303,9 @@
     (setq dired-font-lock-keywords
           (append *original-dired-font-lock-keywords* lst))))
 
-(dired-highlight-by-extensions
-  '(("txt" font-lock-variable-name-face)
-    ("lisp" "el" "pl" "c" "h" "cc" font-lock-constant-face)))
+;; (dired-highlight-by-extensions
+;;   '(("txt" font-lock-variable-name-face)
+;;     ("lisp" "el" "pl" "c" "h" "cc" font-lock-constant-face)))
 
 
 ;
@@ -306,6 +328,13 @@
 				   (setq emacs-keybind-program-file "~/.setting/share/emacs/site-lisp/emacs_keybind.rb")
 				   (setq emacs-keybind-keyboard-kind "japanese")
 				   (setq emacs-keybind-work-dir "/Users/makoto/.emacs.d"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; gtags
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require-if-exists 'gtags
+				   (global-set-key (kbd "M-.") 'gtags-find-tag)
+				   (global-set-key (kbd "M-*") 'gtags-pop-stack))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Customize by 'M-x customize'
