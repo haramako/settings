@@ -74,6 +74,7 @@
 (setq auto-mode-alist (append '(("Gemfile$" . ruby-mode)) auto-mode-alist))
 (setq auto-mode-alist (append '(("Capfile$" . ruby-mode)) auto-mode-alist))
 (setq auto-mode-alist (append '(("Rakefile$" . ruby-mode)) auto-mode-alist))
+(setq auto-mode-alist (append '(("Guardfile$" . ruby-mode)) auto-mode-alist))
 (setq auto-mode-alist (append '(("config.ru$" . ruby-mode)) auto-mode-alist))
 (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
                                      interpreter-mode-alist))
@@ -85,7 +86,7 @@
 (add-hook 'ruby-mode-hook
 		  '(lambda ()
 			 (require 'cl)
-			 (require 'rcodetools)
+			 (require-if-exists 'rcodetools)
 			 (require 'auto-complete-config)
 			 (ac-config-default)
 			 (define-key ruby-mode-map (kbd "C-u") 'ac-start)
@@ -161,6 +162,19 @@
 (setq auto-mode-alist (append '(("\\.erb$" . web-mode)) auto-mode-alist))
 (setq auto-mode-alist (append '(("\\.ejs$" . web-mode)) auto-mode-alist))
 
+;;; py-mode
+(autoload 'python-mode "python-mode" "Majar mode for python")
+(setq auto-mode-alist (append '(("SConstruct$" . python-mode)) auto-mode-alist))
+
+;;; scheme-mode
+(add-hook 'scheme-mode-hook
+		  '(lambda ()
+			 (local-set-key (kbd "M-.") 'find-tag)
+			 (local-set-key (kbd "M-*") 'pop-tag-mark)
+			 (add-to-list 'scheme-font-lock-keywords-2 '("\\?[^ ()]+" . font-lock-variable-name-face) t)
+			 ))
+
+
 ; change indent
 (add-hook 'php-mode-hook
           (lambda ()
@@ -175,6 +189,11 @@
 ;;; go-mode
 (autoload 'go-mode "go-mode" "Majar mode for go")
 (setq auto-mode-alist (append '(("\\.go$" . go-mode)) auto-mode-alist))
+
+;;; haskell-mode
+(add-hook 'haskell-mode-hook
+		  (lambda ()
+			(turn-on-haskell-indentation)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; compilation-mode で自動ジャンプできるようにする
@@ -210,9 +229,13 @@
 (add-to-list 'compilation-error-regexp-alist-alist
 			 '(golang "^\t\\([^,\" \n\t:]+\\):\\([0-9]+\\) \\+" 1 2))
 
+;; complation for gcc assert
+(add-to-list 'compilation-error-regexp-alist-alist
+			 '(gcc-assert " file \\([^,\" \n\t]+\\), line \\([0-9]+\\)" 1 2))
+
 ;; 一部のモードが邪魔をするため減らす
 (setq compilation-error-regexp-alist
-      '(node-js bash gnu gcc-include perl python ruby golang))
+      '(node-js bash gnu gcc-include perl python ruby golang gcc-assert))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; For SKK
