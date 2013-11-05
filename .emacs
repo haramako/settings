@@ -233,9 +233,13 @@
 (add-to-list 'compilation-error-regexp-alist-alist
 			 '(gcc-assert " file \\([^,\" \n\t]+\\), line \\([0-9]+\\)" 1 2))
 
+;; complation for ca65
+(add-to-list 'compilation-error-regexp-alist-alist
+			 '(ca65 "^\\([^,\" \n\t]+\\)(\\([0-9]+\\)): Error:" 1 2))
+
 ;; 一部のモードが邪魔をするため減らす
 (setq compilation-error-regexp-alist
-      '(node-js bash gnu gcc-include perl python ruby golang gcc-assert))
+      '(node-js bash gnu gcc-include perl python ruby golang gcc-assert ca65))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; For SKK
@@ -269,6 +273,7 @@
 (global-set-key "\C-u"     'dabbrev-expand)
 (global-set-key "\C-c\t"   'indent-region)
 (global-set-key [C-return] 'chrome-reload)
+(global-set-key "\C-xr"    'revert-buffer)
 
 ;; Mac-OS-X上でchromeのリロードを行う
 (defun chrome-reload ()

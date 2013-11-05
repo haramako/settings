@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require 'pp'
+require 'json'
+pp JSON.parse(ARGF.read)
