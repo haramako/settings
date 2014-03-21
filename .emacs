@@ -3,11 +3,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ELPA( Emacs Lisp Package Archive) 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(when
-    (load
-     (expand-file-name "~/.setting/share/emacs/site-lisp/package.el"))
-  (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
-  (package-initialize))
+(require 'package)
+(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+(package-initialize)
 
 ;;; add to paths
 (setq load-path (cons "~/.setting/share/emacs/site-lisp" load-path))
@@ -16,6 +14,10 @@
 ;;; See: http://e-arrows.sakura.ne.jp/2010/03/macros-in-emacs-el.html
 (defmacro require-if-exists (lib &rest body)
   `(when (require ,lib nil t) ,@body))
+
+;;; sh と環境変数を同期する
+;;; See: http://qiita.com/catatsuy/items/3dda714f4c60c435bb25
+(exec-path-from-shell-copy-envs '("PATH" "GAUCHE_LOAD_PATH"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic setting
@@ -58,6 +60,10 @@
 (define-key global-map [ns-drag-file] 'ns-find-file)
 (setq ns-pop-up-frames nil)
 
+;;; #ffffff などに色を付ける
+;;; See: http://qiita.com/ironsand/items/cf8c582da3ec20715677
+(add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ido-mode
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -70,29 +76,36 @@
 
 ;;; ruby-mode basic-setting
 (autoload 'ruby-mode "ruby-mode" "alternate mode for editing ruby programs")
-(setq auto-mode-alist (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
-(setq auto-mode-alist (append '(("Gemfile$" . ruby-mode)) auto-mode-alist))
-(setq auto-mode-alist (append '(("Capfile$" . ruby-mode)) auto-mode-alist))
-(setq auto-mode-alist (append '(("Rakefile$" . ruby-mode)) auto-mode-alist))
-(setq auto-mode-alist (append '(("Guardfile$" . ruby-mode)) auto-mode-alist))
-(setq auto-mode-alist (append '(("config.ru$" . ruby-mode)) auto-mode-alist))
-(setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
-                                     interpreter-mode-alist))
+;; (setq auto-mode-alist (append '(("\\.rb$" . ruby-mode)) auto-mode-alist))
+;; (setq auto-mode-alist (append '(("Gemfile$" . ruby-mode)) auto-mode-alist))
+;; (setq auto-mode-alist (append '(("Capfile$" . ruby-mode)) auto-mode-alist))
+;; (setq auto-mode-alist (append '(("Rakefile$" . ruby-mode)) auto-mode-alist))
+;; (setq auto-mode-alist (append '(("Guardfile$" . ruby-mode)) auto-mode-alist))
+;; (setq auto-mode-alist (append '(("config.ru$" . ruby-mode)) auto-mode-alist))
+;; (setq interpreter-mode-alist (append '(("ruby" . ruby-mode))
+;;                                      interpreter-mode-alist))
 ;;; Rinari for rails
-(add-to-list 'load-path "~/.setting/share/emacs/site-lisp/rinari")
-(require 'rinari nil t)
+;; (add-to-list 'load-path "~/.setting/share/emacs/site-lisp/rinari")
+;; (require 'rinari nil t)
 
 ;;;
 (add-hook 'ruby-mode-hook
 		  '(lambda ()
-			 (require 'cl)
-			 (require-if-exists 'rcodetools)
-			 (require 'auto-complete-config)
-			 (ac-config-default)
-			 (define-key ruby-mode-map (kbd "C-u") 'ac-start)
-			 (define-key ruby-mode-map (kbd "C-c o") 'xmp)
+			 ;; (require 'cl)
+			 ;; (require-if-exists 'rcodetools)
+			 ;; (define-key ruby-mode-map (kbd "C-c o") 'xmp)
+			 
+			 ;; (require-if-exists 'auto-complete-config
+			 ;; 					(ac-config-default)
+			 ;; 					(define-key ruby-mode-map (kbd "C-u") 'ac-start))
+			 
 			 ;; highlight for RSpec
-			 (add-to-list 'ruby-font-lock-keywords '("\\.\\(should_not\\|should\\)" 0 font-lock-keyword-face) t)
+			 (let ((a-rspec-keywords '("should" "should_not" "describe" "it" "context")))
+			   (add-to-list 'font-lock-keywords
+							(cons (list (concat "" (regexp-opt a-rspec-keywords t) "")
+										1 'font-lock-keyword-face)
+								  (cadr font-lock-keywords))
+							t))
 			 ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -156,6 +169,14 @@
 (setq interpreter-mode-alist (append '(("php" . php-mode))
                                      interpreter-mode-alist))
 
+; change indent
+(add-hook 'php-mode-hook
+          (lambda ()
+            (c-set-offset 'case-label' 4)
+            (c-set-offset 'arglist-intro' 4)
+            (c-set-offset 'arglist-cont-nonempty' 4)
+            (c-set-offset 'arglist-close' 0)))
+
 ;;; web-mode
 (autoload 'web-mode "web-mode" "Majar mode for html")
 (setq auto-mode-alist (append '(("\\.html$" . web-mode)) auto-mode-alist))
@@ -167,21 +188,32 @@
 (setq auto-mode-alist (append '(("SConstruct$" . python-mode)) auto-mode-alist))
 
 ;;; scheme-mode
-(add-hook 'scheme-mode-hook
+(require 'cl)
+(autoload 'gauche-mode "gauche-mode" "Majar mode for scheme")
+(setq auto-mode-alist (append '(("\\.scm$" . gauche-mode)) auto-mode-alist))
+(add-hook 'gauche-mode-hook
 		  '(lambda ()
-			 (local-set-key (kbd "M-.") 'find-tag)
 			 (local-set-key (kbd "M-*") 'pop-tag-mark)
-			 (add-to-list 'scheme-font-lock-keywords-2 '("\\?[^ ()]+" . font-lock-variable-name-face) t)
+			 (local-set-key (kbd "M-.") 'find-tag)
+			 (local-set-key (kbd "M-C-d") 'down-list)
+			 (local-set-key (kbd "C-c C-c") 'comment-region)
+			 (add-to-list 'scheme-font-lock-keywords-2 '("\\?[^ ()]+" . font-lock-variable-name-face))
+			 ;; カッコに色を付ける
+			 (require 'rainbow-delimiters)
+			 (rainbow-delimiters-mode)
+			 (dolist (x '((3 "#66ff66") (4 "#888888") (5 "#6666ff") (6 "#ff6666")
+						  (7 "#dddd66") (8 "#66bbbb") (9 "#66bb66") (10 "#bb6666")))
+					 (custom-set-faces
+					  `(,(intern (format "rainbow-delimiters-depth-%d-face" (car x)))
+						((t (:foreground ,(cadr x)))))))
+
+			 ;; 括弧の表示をよくする
+			 (require 'mic-paren)
+			 (setq paren-highlight-offscreen t)
+			 (check-parens)
+			 (setq paren-ding-unmatched t)
+
 			 ))
-
-
-; change indent
-(add-hook 'php-mode-hook
-          (lambda ()
-            (c-set-offset 'case-label' 4)
-            (c-set-offset 'arglist-intro' 4)
-            (c-set-offset 'arglist-cont-nonempty' 4)
-            (c-set-offset 'arglist-close' 0)))
 
 ;;; asm mode
 (setq tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80 84 88 92 96 100 104 108 112 116 120))
@@ -203,7 +235,9 @@
              '(ruby "\\([^ \t\n]+\\):\\([0-9]+\\):in" 1 2 nil)) ; for ruby's "    from hoge.rb:99: error message"
 (add-to-list 'compilation-error-regexp-alist 'ruby)
 (add-to-list 'compilation-error-regexp-alist-alist
-             '(node-js "at .+ (\\([^ \n]+\\):\\([0-9]+\\):\\([0-9]+\\))" 1 2 nil)) ; for node-js's "    at Object.<hoge> (hoge.js:99:11)"
+             '(node-js "at .+ (\\([^ \n]+\\):\\([0-9]+\\):\\([0-9]+\\))" 1 2 nil)) ; for node-js's
+(add-to-list 'compilation-error-regexp-alist-alist
+             '(gauche "At line \\([0-9]+\\) of \"\\([^\"]+\\)\"" 2 1 nil)) ; for ruby's " At line 999 of "file.scm"
 ;(add-to-list 'compilation-error-regexp-alist
 ;			 '("\\[\\(.+\\):\\([0-9]+\\)" 1 2 nil) t) ; for test/unit assertion
 ;(add-to-list 'compilation-error-regexp-alist
@@ -239,7 +273,7 @@
 
 ;; 一部のモードが邪魔をするため減らす
 (setq compilation-error-regexp-alist
-      '(node-js bash gnu gcc-include perl python ruby golang gcc-assert ca65))
+      '(node-js bash gnu gcc-include perl python ruby golang gcc-assert ca65 gauche))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; For SKK
@@ -283,31 +317,28 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; dired-mode colorize for windows
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(load "dired")
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; color setting
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;(if window-system
+(if window-system
     (progn
-      (tool-bar-mode 0) ;; ツールバーを隠す
-      (set-background-color "#102418")
-      (set-foreground-color "#d0d0d0")
-      (set-cursor-color "#ff4040")
-      (set-face-foreground 'modeline "Black")
-      (set-face-background 'modeline "DarkKhaki")
-      (set-face-background 'region "#142A4A") ;; リージョン指定の際の色
-      (set-face-bold-p     'modeline nil)
-      (set-face-background 'highlight "black")
-      (set-face-foreground 'font-lock-comment-face "#309040")
-      (set-face-foreground 'font-lock-string-face "#b06040")
-      (set-face-foreground 'font-lock-variable-name-face "#c0a040")
-      (set-face-foreground 'font-lock-keyword-face "#6060b0")
-      (set-face-foreground 'font-lock-doc-face "#40b040")
-      (set-face-foreground 'dired-ignored "#606060") ;; バックアップファイルなど
-      );)
+       (tool-bar-mode 0) ;; ツールバーを隠す
+	   ))
+
+(set-background-color "#102418")
+(set-foreground-color "#d0d0d0")
+(set-cursor-color "#ff4040")
+;; (set-face-foreground 'modeline "Black")
+;; (set-face-background 'modeline "DarkKhaki")
+(set-face-background 'region "#142A4A") ;; リージョン指定の際の色
+;; (set-face-bold-p     'modeline nil)
+(set-face-background 'highlight "black")
+(set-face-foreground 'font-lock-comment-face "#309040")
+(set-face-foreground 'font-lock-string-face "#b06040")
+(set-face-foreground 'font-lock-variable-name-face "#c0a040")
+(set-face-foreground 'font-lock-keyword-face "#6060b0")
+(set-face-foreground 'font-lock-doc-face "#40b040")
+(set-face-foreground 'dired-ignored "#606060") ;; バックアップファイルなど
+(set-face-background 'show-paren-mismatch "#ff0000")
 
 (if (not window-system)
 	(progn
@@ -319,6 +350,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; For Dired-modeで色をつける
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'dired)
+
 (defvar *original-dired-font-lock-keywords* dired-font-lock-keywords)
 (defun dired-highlight-by-extensions (highlight-list)
   "highlight-list accept list of (regexp [regexp] ... face)."
@@ -367,8 +400,4 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Customize by 'M-x customize'
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(custom-set-variables
-  ;; custom-set-variables was added by Custom -- don't edit or cut/paste it!
-  ;; Your init file should contain only one such instance.
- )
-
+(custom-set-variables)

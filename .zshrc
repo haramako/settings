@@ -29,6 +29,7 @@ alias mk='make -e'
 alias euc='LANG=ja_JP.euc-jp'
 alias utf='LANG=ja_JP.utf-8'
 alias en='LANG=C'
+alias be='bundle exec'
 
 if [ `uname` = 'Darwin' ]; then
     alias ls='ls -G'
@@ -46,6 +47,7 @@ export PATH=~/bin:~/.setting/bin:~/node_modules/.bin:$PATH
 export RUBYLIB=.:~/lib/ruby
 export EDITOR=emacs
 export PGUSER='postgres'
+export GAUCHE_LOAD_PATH=.:~/.setting/share/gauche:~/.setting/share/slib
 
 ulimit -c 1000000 # limit for core file
 
@@ -53,35 +55,8 @@ ulimit -c 1000000 # limit for core file
 # load setting for local
 [ -f ~/.zshrc-local.sh ] && source ~/.zshrc-local.sh
 
-
 # プロンプトの色を変える
-RPROMPT="%{${fg[white]}%}   [%/]%{${reset_color}%}"
-PROMPT2="%{${fg[cyan]}%}%_%{${fg[green]%}%}\$%{${reset_color}%} "
-case ${UID} in
-	0)
-        # rootなら赤に
-		PROMPT="%{${fg[yellow]}%}${HOST}%{${fg[green]%}%}%%%{${reset_color}%} "
-		;;
-	*)
-        # それ以外は白
-	    PROMPT="${HOST_COLOR}${HOST}%{${fg[green]%}%}\$%{${reset_color}%} "
-		;;
-esac
-# リモートアクセスの場合 @ をつける
-[ -n "${REMOTEHOST}${SSH_CONNECTION}" ] && PROMPT="%{${fg[red]}%}@%{${reset_color}%}${PROMPT}"
-
-
-export EDITOR=emacs
-export PGUSER='postgres'
-
-ulimit -c 1000000 # limit for core file
-
-# load setting for local
-[ -f ".zshrc-local.sh" ] && source .zshrc-local.sh
-
-
-# プロンプトの色を変える
-RPROMPT="%{${fg[white]}%}   [%/]%{${reset_color}%}"
+RPROMPT="%{${fg[grey]}%}   [%/]%{${reset_color}%}"
 PROMPT2="%{${fg[cyan]}%}%_%{${fg[green]%}%}\$%{${reset_color}%} "
 case ${UID} in
 	0)
@@ -98,15 +73,22 @@ esac
 
 # ターミナルタイトルの設定
 case "${TERM}" in
-kterm*|xterm)
+kterm*|xterm*)
     precmd() {
-        echo -ne "\033]0;${USER}@${HOST%%.*}:${PWD}\007"
+		if [ -n "${REMOTEHOST}${SSH_CONNECTION}" ]; then
+			echo -ne "\033]0;${USER}@${HOST%%.*}:${PWD}\007"
+		else
+			echo -ne "\033]0;`basename ${PWD}`\007"
+		fi
     }
     ;;
 esac
 
-# RVMの設定
-if [[ -s "$HOME/.rvm/scripts/rvm" ]]  ; then source "$HOME/.rvm/scripts/rvm" ; fi
+# boxenの設定
+if [ -z $BOXEN_HOME ]; then
+	[ -f /opt/boxen/env.sh ] && source /opt/boxen/env.sh
+	[ -f /opt/boxen/nvm/nvm.sh ] && source /opt/boxen/nvm/nvm.sh
+fi
 
 utf
 

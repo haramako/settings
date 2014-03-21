@@ -4,13 +4,13 @@
 
 ;; setting fonts
 (set-face-attribute 'default nil
-					:family "Ricty"
+					:family "Ricty Diminished"
 					:height 140)
 (set-fontset-font "fontset-default"
                   'unicode
-                  '("Ricty" . "iso10646-1"))
+                  '("Ricty Diminished" . "iso10646-1"))
 (set-fontset-font "fontset-default"
                   'japanese-jisx0208
-                  '("Ricty" . "iso10646-1"))
+                  '("Ricty Diminished" . "iso10646-1"))
 
 (setq mac-command-modifier 'meta)

@@ -1,4 +1,10 @@
 ;; for Darwin
 (provide 'system-type-darwin)
 
-(set-face-foreground 'font-lock-comment-face "red")     ; mac上でコメントが赤くならないのを修正
+;; Mac-OS-X上でchromeのリロードを行う
+(defun chrome-reload ()
+  "Reload chrome"
+  (interactive)
+  (shell-command "~/.setting/bin/chrome-reload"))
+
+(global-set-key [C-return] 'chrome-reload)

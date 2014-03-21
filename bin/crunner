@@ -6,4 +6,4 @@ if [ "$1" = '' ]; then
 fi
 SRC=$1
 TARGET=`mktemp -t crunner`
-g++ $SRC -Wall -o $TARGET && $TARGET
+gcc $SRC -Wall -o $TARGET && $TARGET
