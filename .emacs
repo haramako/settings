@@ -17,6 +17,7 @@
 
 ;;; sh と環境変数を同期する
 ;;; See: http://qiita.com/catatsuy/items/3dda714f4c60c435bb25
+(require 'exec-path-from-shell)
 (exec-path-from-shell-copy-envs '("PATH" "GAUCHE_LOAD_PATH"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -62,6 +63,7 @@
 
 ;;; #ffffff などに色を付ける
 ;;; See: http://qiita.com/ironsand/items/cf8c582da3ec20715677
+(autoload 'rainbow-mode "rainbow-mode")
 (add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -296,6 +298,7 @@
 (global-set-key "\M-n" 'windmove-down)
 
 ;;; shortcut 
+(global-set-key "\C-\\"    'undo)
 (global-set-key "\r"       'newline-and-indent)
 (global-set-key "\C-t"     'switch-to-buffer)
 (global-set-key "\C-cc"    'compile)
@@ -337,7 +340,6 @@
 (set-face-foreground 'font-lock-variable-name-face "#c0a040")
 (set-face-foreground 'font-lock-keyword-face "#6060b0")
 (set-face-foreground 'font-lock-doc-face "#40b040")
-(set-face-foreground 'dired-ignored "#606060") ;; バックアップファイルなど
 (set-face-background 'show-paren-mismatch "#ff0000")
 
 (if (not window-system)
@@ -351,6 +353,8 @@
 ;; For Dired-modeで色をつける
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'dired)
+
+(set-face-foreground 'dired-ignored "#606060") ;; バックアップファイルなど
 
 (defvar *original-dired-font-lock-keywords* dired-font-lock-keywords)
 (defun dired-highlight-by-extensions (highlight-list)
@@ -388,7 +392,7 @@
 (require-if-exists 'emacs-keybind
 				   (setq emacs-keybind-program-file "~/.setting/share/emacs/site-lisp/emacs_keybind.rb")
 				   (setq emacs-keybind-keyboard-kind "japanese")
-				   (setq emacs-keybind-work-dir "/Users/makoto/.emacs.d"))
+				   (setq emacs-keybind-work-dir "~/.emacs.d"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; gtags
@@ -396,6 +400,9 @@
 (require-if-exists 'gtags
 				   (global-set-key (kbd "M-.") 'gtags-find-tag)
 				   (global-set-key (kbd "M-*") 'gtags-pop-stack))
+
+(global-auto-revert-mode 1)
+(setq auto-revert-verbose nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Customize by 'M-x customize'
