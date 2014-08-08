@@ -56,7 +56,6 @@ ulimit -c 1000000 # limit for core file
 [ -f ~/.zshrc-local.sh ] && source ~/.zshrc-local.sh
 
 # プロンプトの色を変える
-RPROMPT="%{${fg[grey]}%}   [%/]%{${reset_color}%}"
 PROMPT2="%{${fg[cyan]}%}%_%{${fg[green]%}%}\$%{${reset_color}%} "
 case ${UID} in
 	0)
@@ -71,10 +70,14 @@ esac
 # リモートアクセスの場合 @ をつける
 [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] && PROMPT="%{${fg[red]}%}@%{${reset_color}%}${PROMPT}"
 
+source /etc/bash_completion.d/git-prompt
+
+GIT_PS1_SHOWDIRTYSTATE=1
 # ターミナルタイトルの設定
 case "${TERM}" in
 kterm*|xterm*)
     precmd() {
+		RPROMPT="%{${fg[gray]}%}   [%/($(__git_ps1 "%s")]%{${reset_color}%}"
 		if [ -n "${REMOTEHOST}${SSH_CONNECTION}" ]; then
 			echo -ne "\033]0;${USER}@${HOST%%.*}:${PWD}\007"
 		else
@@ -94,3 +97,6 @@ utf
 
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
