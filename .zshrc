@@ -70,14 +70,14 @@ esac
 # リモートアクセスの場合 @ をつける
 [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] && PROMPT="%{${fg[red]}%}@%{${reset_color}%}${PROMPT}"
 
-source /etc/bash_completion.d/git-prompt
+source ~/.setting/share/zsh/git-prompt.sh
 
 GIT_PS1_SHOWDIRTYSTATE=1
 # ターミナルタイトルの設定
 case "${TERM}" in
 kterm*|xterm*)
     precmd() {
-		RPROMPT="%{${fg[gray]}%}   [%/($(__git_ps1 "%s")]%{${reset_color}%}"
+		RPROMPT="%{${fg[gray]}%}   [%/($(__git_ps1 "%s"))]%{${reset_color}%}"
 		if [ -n "${REMOTEHOST}${SSH_CONNECTION}" ]; then
 			echo -ne "\033]0;${USER}@${HOST%%.*}:${PWD}\007"
 		else

@@ -3,6 +3,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; ELPA( Emacs Lisp Package Archive) 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq load-path (cons "~/.setting/share/emacs/site-lisp" load-path))
+
 (require 'package)
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (package-initialize)
@@ -63,8 +65,8 @@
 
 ;;; #ffffff などに色を付ける
 ;;; See: http://qiita.com/ironsand/items/cf8c582da3ec20715677
-(autoload 'rainbow-mode "rainbow-mode")
-(add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
+;(autoload 'rainbow-mode "rainbow-mode")
+;(add-hook 'emacs-lisp-mode-hook 'rainbow-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ido-mode
