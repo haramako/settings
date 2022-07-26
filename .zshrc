@@ -26,9 +26,6 @@ alias mv='mv -i'
 alias e='emacs -nw'
 alias p='pwd'
 alias mk='make -e'
-alias euc='LANG=ja_JP.euc-jp'
-alias utf='LANG=ja_JP.utf-8'
-alias en='LANG=C'
 alias be='bundle exec'
 
 if [ `uname` = 'Darwin' ]; then
@@ -77,26 +74,33 @@ GIT_PS1_SHOWDIRTYSTATE=1
 case "${TERM}" in
 kterm*|xterm*)
     precmd() {
-		RPROMPT="%{${fg[gray]}%}   [%/($(__git_ps1 "%s"))]%{${reset_color}%}"
-		if [ -n "${REMOTEHOST}${SSH_CONNECTION}" ]; then
-			echo -ne "\033]0;${USER}@${HOST%%.*}:${PWD}\007"
-		else
-			echo -ne "\033]0;`basename ${PWD}`\007"
-		fi
+	if [[ -v WSLENV ]]; then
+	    # Skip git prompt when WSL.
+	    RPROMPT="%{${fg[gray]}%}   [%/]%{${reset_color}%}"
+	else
+	    RPROMPT="%{${fg[gray]}%}   [%/($(__git_ps1 "%s"))]%{${reset_color}%}"
+	fi
+		
+	if [ -n "${REMOTEHOST}${SSH_CONNECTION}" ]; then
+	    echo -ne "\033]0;${USER}@${HOST%%.*}:${PWD}\007"
+	else
+	    echo -ne "\033]0;`basename ${PWD}`\007"
+	fi
     }
     ;;
 esac
 
-# boxenの設定
-if [ -z $BOXEN_HOME ]; then
-	[ -f /opt/boxen/env.sh ] && source /opt/boxen/env.sh
-	[ -f /opt/boxen/nvm/nvm.sh ] && source /opt/boxen/nvm/nvm.sh
+export LANG=ja_JP.utf-8
+
+# Setup pyenv
+export PATH="/usr/local/heroku/bin:$PATH"
+if which pyenv >/dev/null ; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
 fi
 
-utf
-
-### Added by the Heroku Toolbelt
-export PATH="/usr/local/heroku/bin:$PATH"
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+# Setup rbenv
+if which rbenv >/dev/null ; then
+    eval "$(rbenv init -)"
+fi

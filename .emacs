@@ -5,9 +5,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq load-path (cons "~/.setting/share/emacs/site-lisp" load-path))
 
-(require 'package)
-(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
-(package-initialize)
+;(require 'package)
+;(add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
+;(package-initialize)
 
 ;;; add to paths
 (setq load-path (cons "~/.setting/share/emacs/site-lisp" load-path))
@@ -188,8 +188,9 @@
 (setq auto-mode-alist (append '(("\\.ejs$" . web-mode)) auto-mode-alist))
 
 ;;; py-mode
-(autoload 'python-mode "python-mode" "Majar mode for python")
+(autoload 'python "pytho-moden" "Majar mode for python")
 (setq auto-mode-alist (append '(("SConstruct$" . python-mode)) auto-mode-alist))
+(setq auto-mode-alist (append '(("\\.py$" . python-mode)) auto-mode-alist))
 
 ;;; scheme-mode
 (require 'cl)
