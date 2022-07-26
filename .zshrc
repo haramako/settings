@@ -52,17 +52,19 @@ ulimit -c 1000000 # limit for core file
 # load setting for local
 [ -f ~/.zshrc-local.sh ] && source ~/.zshrc-local.sh
 
+export HOST_COLOR=$fg[cyan]
+
 # プロンプトの色を変える
 PROMPT2="%{${fg[cyan]}%}%_%{${fg[green]%}%}\$%{${reset_color}%} "
 case ${UID} in
-	0)
+    0)
         # rootなら赤に
-		PROMPT="%{${fg[yellow]}%}${HOST}%{${fg[green]%}%}%%%{${reset_color}%} "
-		;;
-	*)
+	PROMPT="%{${fg[yellow]}%}${HOST}%{${fg[green]%}%}%%%{${reset_color}%} "
+	;;
+    *)
         # それ以外は白
-	    PROMPT="${HOST_COLOR}${HOST}%{${fg[green]%}%}\$%{${reset_color}%} "
-		;;
+	PROMPT="${HOST_COLOR}${HOST}%{${fg[green]%}%}\$%{${reset_color}%} "
+	;;
 esac
 # リモートアクセスの場合 @ をつける
 [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] && PROMPT="%{${fg[red]}%}@%{${reset_color}%}${PROMPT}"
